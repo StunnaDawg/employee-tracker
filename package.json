@@ -1,0 +1,14 @@
+{
+  "name": "sql-employee",
+  "version": "1.0.0",
+  "description": "employer questins",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.js"
+  },
+  "author": "Jonson Allen",
+  "license": "ISC",
+  "dependencies": {
+    "inquirer": "^9.1.5"
+  }
+}
