@@ -1,7 +1,7 @@
 {
   "name": "sql-employee",
   "version": "1.0.0",
-  "description": "employer questins",
+  "description": "employer questions",
   "main": "index.js",
   "scripts": {
     "test": "node index.js"
@@ -9,6 +9,8 @@
   "author": "Jonson Allen",
   "license": "ISC",
   "dependencies": {
-    "inquirer": "^9.1.5"
+    "console.table": "^0.10.0",
+    "inquirer": "^8.2.4",
+    "mysql2": "^3.2.0"
   }
 }
