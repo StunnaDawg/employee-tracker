@@ -2,11 +2,11 @@ const inquirer = require('inquirer');
 const mysql = require('mysql2');
 const cTable = require('console.table');
 
-const connection = mysql.createConnection({
+/* const departmentData = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     database: 'test'
-  });
+  }); */
 
 const employeeQuestions = inquirer.prompt( [
     {
@@ -82,6 +82,10 @@ const employeeQuestions = inquirer.prompt( [
     choices: ['Sales Person', 'Lead Engineer', 'Legal Team Lead', 'Sales Lead', 'Accountant'],
     when: (answers) => answers.leadoff === 'Update Employee Role'
     }
-])
+]) .then((answers) => {
+    if (answers.leadoff === 'View all Departments') {
+        console.log('hi');
+    }
+})
 
 employeeQuestions;
