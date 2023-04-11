@@ -4,20 +4,27 @@ const mysql = require('mysql2');
 const cTable = require('console.table');
 const app = express();
 
-const PORT = process.env.PORT || 3002;
+const PORT = process.env.PORT || 3001;
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 const departmentData = mysql.createConnection(
     {
-    host: 'localhost',
+    host: '127.0.0.1',
     user: 'root',
-    password:'',
+    password: '',
     database: 'department_db'
-  },
-  console.log(`Connected to the department_db database.`)
+  }
   );
+
+  departmentData.connect((err) => {
+  if (err) {
+    console.error('Error connecting to MySQL:', err);
+    return;
+  }
+  console.log('Connected to MySQL successfully!');
+});
 
 const employeeQuestions = inquirer.prompt( [
     {
@@ -25,6 +32,7 @@ const employeeQuestions = inquirer.prompt( [
         name: 'leadoff',
         message: 'What would you like to do?', //Depending on the answer chosen ask next question
         choices: ['View all Employeees', 'Add Employee', 'Update Employee Role', 'View all Roles', 'Add Role', 'View all Departments', 'Add Department', 'Quit']
+
         
     }, 
     {
@@ -95,7 +103,10 @@ const employeeQuestions = inquirer.prompt( [
     }
 ]) .then((answers) => {
     if (answers.leadoff === 'View all Departments') {
-        console.log('hi');
+       departmentData.query('SELECT * FROM departmentNames', function (err, results) {
+        console.table(results)
+});
+
     }
 })
 
