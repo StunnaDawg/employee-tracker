@@ -1,12 +1,23 @@
 const inquirer = require('inquirer');
+const express = require('express');
 const mysql = require('mysql2');
 const cTable = require('console.table');
+const app = express();
 
-/* const departmentData = mysql.createConnection({
+const PORT = process.env.PORT || 3002;
+
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+
+const departmentData = mysql.createConnection(
+    {
     host: 'localhost',
     user: 'root',
-    database: 'test'
-  }); */
+    password:'',
+    database: 'department_db'
+  },
+  console.log(`Connected to the department_db database.`)
+  );
 
 const employeeQuestions = inquirer.prompt( [
     {
@@ -87,5 +98,14 @@ const employeeQuestions = inquirer.prompt( [
         console.log('hi');
     }
 })
+
+app.use((req, res) => {
+    res.status(404).end();
+  });
+  
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+  
 
 employeeQuestions;
