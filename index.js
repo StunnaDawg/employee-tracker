@@ -2,29 +2,17 @@ const inquirer = require('inquirer');
 const express = require('express');
 const mysql = require('mysql2');
 const cTable = require('console.table');
+const helper = require('./helper');
 const app = express();
+
+const helperDB = new helper()
 
 const PORT = process.env.PORT || 3001;
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-const departmentData = mysql.createConnection(
-    {
-    host: '127.0.0.1',
-    user: 'root',
-    password: '',
-    database: 'department_db'
-  }
-  );
 
-  departmentData.connect((err) => {
-  if (err) {
-    console.error('Error connecting to MySQL:', err);
-    return;
-  }
-  console.log('Connected to MySQL successfully!');
-});
 
 const employeeQuestions = inquirer.prompt( [
     {
@@ -103,24 +91,24 @@ const employeeQuestions = inquirer.prompt( [
     }
 ]) .then((answers) => {
     if (answers.leadoff === 'View all Departments') {
-       departmentData.query('SELECT * FROM departmentNames', function (err, results) {
-        console.table(results)
-});
-
+        helperDB.getAllDepartments();
     }
+
+    if (answers.leadoff === 'Add Department') {
+        const departmentName = answers.departmentName;
+        helperDB.addDepartment(departmentName);
+    };
+      
     if (answers.leadoff === 'View all Employeees') {
-        departmentData.query('SELECT * FROM employees', function (err, results) {
+        helperDB.query('SELECT employees.id, employees.first_name, employees.last_name, roleNames.title_name, roleNames.salary FROM employees JOIN roleNames ON employees.role_id = roleNames.id;', function (err, results) {
          console.table(results)
- });
+ })
     
 }
 if (answers.leadoff === 'View all Roles') {
-    departmentData.query('SELECT roleNames.id, roleNames.title_name, roleNames.salary, roleNames.department_id, departmentNames.id AS department_id, departmentNames.department_name FROM roleNames JOIN departmentNames ON roleNames.department_id = departmentNames.id', function (err, results) {
+    helperDB.query('SELECT roleNames.id, roleNames.title_name, roleNames.salary, roleNames.department_id, departmentNames.id AS department_id, departmentNames.department_name FROM roleNames JOIN departmentNames ON roleNames.department_id = departmentNames.id', function (err, results) {
      console.table(results)
-});
-
-}
-
+}) }
 })
 
 app.use((req, res) => {
