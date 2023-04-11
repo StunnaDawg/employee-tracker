@@ -46,7 +46,7 @@ const employeeQuestions = inquirer.prompt( [
         type: 'list',
         name: 'roleDepartment',
         message: 'Which department does this role belong to?',
-        choices: ['Engineering', 'Finance', 'Legal', 'Sales'],
+        choices: [helperDB.getAllDepartmentsNames()],
         when: (answers) => answers.leadoff === 'Add Role'
     },
     {
@@ -65,7 +65,7 @@ const employeeQuestions = inquirer.prompt( [
         type: 'list',
         name: 'roleDepartment',
         message: 'What is the employees role?',
-        choices: ['Sales Person', 'Lead Engineer', 'Legal Team Lead', 'Sales Lead', 'Accountant'],
+        choices: [helperDB.getAllRoleNames()],
         when: (answers) => answers.leadoff === 'Add Employee'
     },
     {
@@ -79,14 +79,14 @@ const employeeQuestions = inquirer.prompt( [
         type: 'list',
         name: 'updateEmployeeRole',
         message: 'Which employee role do you want to update?',
-        choices: ['Bob'],
+        choices: [helperDB.getAllEmployeeNames()],
         when: (answers) => answers.leadoff === 'Update Employee Role'
     },
     {
     type: 'list',
     name: 'updateRole',
     message: 'Which role do you want to assign the employee?',
-    choices: ['Sales Person', 'Lead Engineer', 'Legal Team Lead', 'Sales Lead', 'Accountant'],
+    choices: [helperDB.getAllRoleNames()],
     when: (answers) => answers.leadoff === 'Update Employee Role'
     }
 ]) .then((answers) => {
@@ -100,16 +100,19 @@ const employeeQuestions = inquirer.prompt( [
     };
       
     if (answers.leadoff === 'View all Employeees') {
-        helperDB.query('SELECT employees.id, employees.first_name, employees.last_name, roleNames.title_name, roleNames.salary FROM employees JOIN roleNames ON employees.role_id = roleNames.id;', function (err, results) {
-         console.table(results)
- })
-    
-}
-if (answers.leadoff === 'View all Roles') {
-    helperDB.query('SELECT roleNames.id, roleNames.title_name, roleNames.salary, roleNames.department_id, departmentNames.id AS department_id, departmentNames.department_name FROM roleNames JOIN departmentNames ON roleNames.department_id = departmentNames.id', function (err, results) {
-     console.table(results)
-}) }
-})
+        helperDB.getAllEmployees();
+ }
+    if (answers.leadoff === 'View all Roles') {
+    helperDB.getAllRoles()
+}   
+    if (answers.leadoff === 'Add Role') {
+        const roleName = answers.roleName;
+        const roleSalary = answers.roleSalary;
+        const roleDepartment = answers.roleDepartment;
+        helperDB.addRole(roleName, roleSalary, roleDepartment);
+    }
+
+});
 
 app.use((req, res) => {
     res.status(404).end();
