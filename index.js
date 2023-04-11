@@ -108,6 +108,19 @@ const employeeQuestions = inquirer.prompt( [
 });
 
     }
+    if (answers.leadoff === 'View all Employeees') {
+        departmentData.query('SELECT * FROM employees', function (err, results) {
+         console.table(results)
+ });
+    
+}
+if (answers.leadoff === 'View all Roles') {
+    departmentData.query('SELECT roleNames.id, roleNames.title_name, roleNames.salary, roleNames.department_id, departmentNames.id AS department_id, departmentNames.department_name FROM roleNames JOIN departmentNames ON roleNames.department_id = departmentNames.id', function (err, results) {
+     console.table(results)
+});
+
+}
+
 })
 
 app.use((req, res) => {
