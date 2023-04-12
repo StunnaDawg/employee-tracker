@@ -13,7 +13,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 
-
 const employeeQuestions = inquirer.prompt( [
     {
         type: 'list',
@@ -63,9 +62,17 @@ const employeeQuestions = inquirer.prompt( [
     },
     {
         type: 'list',
-        name: 'roleDepartment',
+        name: 'newEmployeeRole',
         message: 'What is the employees role?',
-        choices: [helperDB.getAllRoleNames()],
+        choices: async () => {
+            try {
+              const roleNames = await helperDB.getAllRoleNames();
+              return roleNames.map(role => role.title_name);
+            } catch (err) {
+              console.error(err);
+              return []; // Return empty array as choices in case of error
+            }
+          },
         when: (answers) => answers.leadoff === 'Add Employee'
     },
     {
@@ -110,6 +117,13 @@ const employeeQuestions = inquirer.prompt( [
         const roleSalary = answers.roleSalary;
         const roleDepartment = answers.roleDepartment;
         helperDB.addRole(roleName, roleSalary, roleDepartment);
+    }
+
+    if (answers.leadoff === 'Add Employee') {
+        const employeeFirstName = answers.employeeFirstName;
+        const employeeLastName = answers.employeeLastName;
+        const newEmployeeRole = answers.newEmployeeRole;
+        helperDB.addEmployee(employeeFirstName, employeeLastName, newEmployeeRole);
     }
 
 });

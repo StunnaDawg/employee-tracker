@@ -48,11 +48,13 @@ class DBHandler {
   }
 
   getAllRoleNames() {
-    const sql = 'SELECT title_name FROM roleNames';
-    this.connection.query(sql, function (err, results) {
-      if (err) throw err;
-      return (results);
-    });
+    return new Promise((resolve, reject) => {
+        const sql = 'SELECT title_name FROM roleNames';
+        this.connection.query(sql, function (err, results) {
+          if (err) reject(err);
+          resolve(results);
+        });
+      });
   }
 
   addRole(roleName, salary, departmentName) {
@@ -87,6 +89,24 @@ getAllEmployeeNames() {
       console.table(results);
     });
   }
+
+  addEmployee(firstName, lastName, title) {
+    const getRoleIdSql = 'SELECT id FROM roleNames WHERE title_name = ?';
+    this.connection.query(getRoleIdSql, [title], (err, roleResults) => {
+      if (err) throw err;
+
+   // Extract department ID from query results
+   const roleId = roleResults[0].id;
+
+   
+   const insertRoleSql = 'INSERT INTO employees (first_name, last_name, role_id) VALUES (?, ?, ?)';
+   this.connection.query(insertRoleSql, [firstName, lastName, roleId], (err, roleResults) => {
+     if (err) throw err;
+     console.log('Role added successfully!');
+    });
+
+  })}
+
 }
 
 module.exports = DBHandler;
