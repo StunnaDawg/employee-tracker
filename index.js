@@ -5,6 +5,7 @@ const cTable = require('console.table');
 const helper = require('./helper');
 const app = express();
 
+//import of the helper.js
 const helperDB = new helper()
 
 const PORT = process.env.PORT || 3001;
@@ -12,6 +13,7 @@ const PORT = process.env.PORT || 3001;
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
+//wrapped in a function so it can be restarted after answering a prompt
 function startPrompt () {
 const employeeQuestions = inquirer.prompt( [
     {
@@ -72,7 +74,7 @@ const employeeQuestions = inquirer.prompt( [
         type: 'list',
         name: 'newEmployeeRole',
         message: 'What is the employees role?',
-        choices: async () => {
+        choices: async () => { //aysnc function needed to correspond with the promise functions in helper.js
             try {
               const roleNames = await helperDB.getAllRoleNames();
               return roleNames.map(role => role.title_name);

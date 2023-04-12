@@ -1,5 +1,8 @@
 const mysql = require('mysql2');
 
+// helper class to handle all the functions needed to query thet data with sql
+//It also handles the connection between the server and sql
+
 class DBHandler {
   constructor() {
     this.connection = mysql.createConnection({
@@ -15,6 +18,8 @@ class DBHandler {
     });
   }
 
+// all functions below handle the data that is either INSERT, DELETE, SELECT from SQL
+
   addDepartment(departmentName) {
     const sql = 'INSERT INTO departmentNames (department_name) VALUES (?)';
     this.connection.query(sql, [departmentName], function (err, results) {
@@ -23,6 +28,7 @@ class DBHandler {
     });
   }
 
+  // the promise is needed so inqurier waits for the data to be taken from the database
   getAllDepartmentsNames() {
     return new Promise((resolve, reject) => {
         const sql = 'SELECT department_name FROM departmentNames';
@@ -38,6 +44,8 @@ class DBHandler {
       });
     }
 
+    // console.table is needed to create the tables in the CLI
+    // console.table exists in all functions that generate a full table
   getAllDepartments() {
     const sql = 'SELECT * FROM departmentNames';
     this.connection.query(sql, function (err, results) {
@@ -46,6 +54,7 @@ class DBHandler {
     });
   }
 
+  //get all roles needs to join tables to retrieve the department
   getAllRoles() {
     const sql = 'SELECT roleNames.id, roleNames.title_name, roleNames.salary, roleNames.department_id, departmentNames.id AS department_id, departmentNames.department_name FROM roleNames JOIN departmentNames ON roleNames.department_id = departmentNames.id';
     this.connection.query(sql, function (err, results) {
@@ -71,10 +80,10 @@ class DBHandler {
         if (err) {
           reject(err);
         } else {
-          // Extract department ID from query results
+          // Extracts the department ID from query results
           const departmentId = departmentResults[0].id;
   
-          // Insert role with department ID into roleNames table
+          // Inserts the role with department ID into roleNames table
           const insertRoleSql = 'INSERT INTO roleNames (title_name, salary, department_id) VALUES (?, ?, ?)';
           this.connection.query(insertRoleSql, [roleName, salary, departmentId], (err, roleResults) => {
             if (err) {
@@ -125,7 +134,7 @@ getAllEmployeeNames() {
     this.connection.query(getRoleIdSql, [title], (err, roleResults) => {
       if (err) throw err;
 
-   // Extract department ID from query results
+   // Extracts the role ID from query results so role id can be called
    const roleId = roleResults[0].id;
 
    
@@ -139,25 +148,25 @@ getAllEmployeeNames() {
 
   updateEmployeeRole(employeeName, roleName) {
     return new Promise((resolve, reject) => {
-      // Retrieve employeeId based on employeeName
+      // Retrieves the employeeId based on employeeName
       const getEmployeeIdSql = 'SELECT id FROM employees WHERE first_name = ?';
       this.connection.query(getEmployeeIdSql, [employeeName], (err, employeeResults) => {
         if (err) reject(err);
         const employeeId = employeeResults[0].id;
   
-        // Retrieve newRoleId based on roleName
+        // Retrieves the newRoleId based on roleName to get the title name
         const getRoleIdSql = 'SELECT id FROM roleNames WHERE title_name = ?';
         this.connection.query(getRoleIdSql, [roleName], (err, roleResults) => {
           if (err) reject(err);
           const newRoleId = roleResults[0].id;
   
-          // Update the employee's current role to NULL or a different value
+          // Update the employee role to null so it can be changed to a new role
           const updateCurrentRoleSql = 'UPDATE employees SET role_id = NULL /* or new role ID */ WHERE id = ?';
           this.connection.query(updateCurrentRoleSql, [employeeId], (err, result) => {
             if (err) reject(err);
             console.log('Employee current role updated successfully');
   
-            // Update the new role for the employee
+            // Update the new role for the employee depending on the users choice
             const updateNewRoleSql = 'UPDATE employees SET role_id = ? WHERE id = ?';
             this.connection.query(updateNewRoleSql, [newRoleId, employeeId], (err, result) => {
               if (err) reject(err);
@@ -170,7 +179,7 @@ getAllEmployeeNames() {
     })
     .catch(err => {
       console.error('Error updating employee role:', err);
-      throw err; // or handle the error in an appropriate way for your application
+      throw err; 
     });
   }
 }

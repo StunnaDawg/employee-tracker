@@ -2,7 +2,7 @@
 
 ## Description
 
-The Employee-Tracker is an CLI application used to keep track of your businesses Departments, Roles, and Employees. My motivation for creating this application was to help anyone who owns a business keep track of their Departments, Roles, and Employees straight from the command line. During the process of building this application I learned how to utilize SQL to create a database, connect it to a server using mysql2, and then use queries to add data or view it depending on the user prompt. I struggled with creating queries to help join and add to my database. I also struggled with creating a relationship between the employees and manager
+The Employee-Tracker is an CLI application used to keep track of your businesses Departments, Roles, and Employees. My motivation for creating this application was to help anyone who owns a business keep track of their Departments, Roles, and Employees straight from the command line. During the process of building this application I learned how to utilize SQL to create a database, connect it to a server using mysql2, and then use queries to add data or view it depending on the user prompt. I struggled with creating queries to help join and add to my database. I also struggled with creating a relationship between the employees and manager.
 
 ## Future Devlopment
 
@@ -26,10 +26,14 @@ Upon downloading the application make sure you do the following:
 - run 'node index.js' to recieve the question prompts'
 
 ## Screenshots
+
 ![Alt](./assets/images/Screenshot%202023-04-12%20at%207.13.26%20PM.png)
 ![Alt](./assets/images/Screenshot%202023-04-12%20at%207.14.33%20PM.png)
 ![Alt](./assets/images/Screenshot%202023-04-12%20at%207.15.28%20PM.png)
+
 ## Demo Video Link
+
+Link: https://watch.screencastify.com/v/mxDm7DgpvA7pB21UMRiv
 
 ## Dependencies
 
