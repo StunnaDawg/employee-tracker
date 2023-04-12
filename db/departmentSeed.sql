@@ -15,10 +15,19 @@ VALUES  (1, 'Sales Person', 70000, 4),
         (6, 'Engineer', 100000, 1);
 
 -- Insert into employees
+-- Insert manager rows and retrieve their employee_id values
 INSERT INTO employees (first_name, last_name, role_id)
-VALUES  ('Marty', 'King', 5),
-        ('Kenny', 'Spenny', 6),
-        ('Charlie', 'Allenski', 2),
-        ('Shohei', 'Ohtani', 1),
-        ('Meji', 'Woo', 4),
-        ('Sansa', 'Stark', 3);
+VALUES ('Charlie', 'Allenski', 2),
+       ('Meji', 'Woo', 4),
+       ('Sansa', 'Stark', 3);
+
+-- Assuming employee_id of the newly inserted managers are 1, 2, and 3 respectively
+SET @charlie_id = LAST_INSERT_ID();
+SET @meji_id = LAST_INSERT_ID();
+SET @sansa_id = LAST_INSERT_ID();
+
+-- Insert employee rows with manager_id
+INSERT INTO employees (first_name, last_name, role_id, manager_id)
+VALUES ('Marty', 'King', 5, @meji_id),
+       ('Kenny', 'Spenny', 6, @charlie_id),
+       ('Shohei', 'Ohtani', 1, @meji_id);

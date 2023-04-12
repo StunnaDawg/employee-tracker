@@ -79,23 +79,47 @@ const employeeQuestions = inquirer.prompt( [
         type: 'list',
         name: 'roleManager',
         message: 'Who is the employees manager?',
-        choices: ['Hannah'],
+        choices: async () => {
+            try {
+              const managers = await helperDB.getAllManager();
+              return managers.map(manager => manager.first_name);
+            } catch (err) {
+              console.error(err);
+              return []; // or handle the error in an appropriate way
+            }
+          },
         when: (answers) => answers.leadoff === 'Add Employee'
     },
     {
         type: 'list',
         name: 'updateEmployeeRole',
         message: 'Which employee role do you want to update?',
-        choices: [helperDB.getAllEmployeeNames()],
-        when: (answers) => answers.leadoff === 'Update Employee Role'
-    },
-    {
-    type: 'list',
-    name: 'updateRole',
-    message: 'Which role do you want to assign the employee?',
-    choices: [helperDB.getAllRoleNames()],
-    when: (answers) => answers.leadoff === 'Update Employee Role'
-    }
+        choices: async () => {
+            try {
+              const employeeNames = await helperDB.getAllEmployeeNames();
+              return employeeNames.map(employee => employee.first_name); 
+            } catch (err) {
+              console.error(err);
+              return [];
+            }
+          },
+          when: (answers) => answers.leadoff === 'Update Employee Role'
+        },
+        {
+            type: 'list',
+            name: 'updateRole',
+            message: 'Which role do you want to assign the employee?',
+            choices: async () => {
+              try {
+                const roleNames = await helperDB.getAllRoleNames();
+                return roleNames.map(roleNames => roleNames.title_name)
+              } catch (err) {
+                console.error(err);
+                return [];
+              }
+            },
+            when: (answers) => answers.leadoff === 'Update Employee Role'
+          }
 ]) .then((answers) => {
     if (answers.leadoff === 'View all Departments') {
         helperDB.getAllDepartments();
@@ -124,6 +148,12 @@ const employeeQuestions = inquirer.prompt( [
         const employeeLastName = answers.employeeLastName;
         const newEmployeeRole = answers.newEmployeeRole;
         helperDB.addEmployee(employeeFirstName, employeeLastName, newEmployeeRole);
+    }
+
+    if (answers.leadoff === 'Update Employee Role') {
+        const employee = answers.updateEmployeeRole;
+        const newRole = answers.updateRole;
+        helperDB.updateEmployeeRole(employee, newRole)
     }
 
 });
