@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 3001;
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-
+function startPrompt () {
 const employeeQuestions = inquirer.prompt( [
     {
         type: 'list',
@@ -45,9 +45,17 @@ const employeeQuestions = inquirer.prompt( [
         type: 'list',
         name: 'roleDepartment',
         message: 'Which department does this role belong to?',
-        choices: [helperDB.getAllDepartmentsNames()],
-        when: (answers) => answers.leadoff === 'Add Role'
-    },
+        choices: async (answers) => {
+            if (answers.leadoff === 'Add Role') {
+              // Fetch department names asynchronously
+              const departmentNames = await helperDB.getAllDepartmentsNames();
+              return departmentNames;
+            } else {
+              return [];
+            }
+          },
+          when: (answers) => answers.leadoff === 'Add Role'
+        },
     {
         type: 'input',
         name: 'employeeFirstName',
@@ -123,24 +131,28 @@ const employeeQuestions = inquirer.prompt( [
 ]) .then((answers) => {
     if (answers.leadoff === 'View all Departments') {
         helperDB.getAllDepartments();
+        
     }
 
     if (answers.leadoff === 'Add Department') {
         const departmentName = answers.departmentName;
         helperDB.addDepartment(departmentName);
+        startPrompt();
     };
       
     if (answers.leadoff === 'View all Employeees') {
         helperDB.getAllEmployees();
  }
     if (answers.leadoff === 'View all Roles') {
-    helperDB.getAllRoles()
+    helperDB.getAllRoles();
+    
 }   
     if (answers.leadoff === 'Add Role') {
         const roleName = answers.roleName;
         const roleSalary = answers.roleSalary;
         const roleDepartment = answers.roleDepartment;
         helperDB.addRole(roleName, roleSalary, roleDepartment);
+        startPrompt();
     }
 
     if (answers.leadoff === 'Add Employee') {
@@ -148,15 +160,18 @@ const employeeQuestions = inquirer.prompt( [
         const employeeLastName = answers.employeeLastName;
         const newEmployeeRole = answers.newEmployeeRole;
         helperDB.addEmployee(employeeFirstName, employeeLastName, newEmployeeRole);
+        startPrompt();
     }
 
     if (answers.leadoff === 'Update Employee Role') {
         const employee = answers.updateEmployeeRole;
         const newRole = answers.updateRole;
-        helperDB.updateEmployeeRole(employee, newRole)
+        helperDB.updateEmployeeRole(employee, newRole);
+        startPrompt();
     }
 
 });
+}
 
 app.use((req, res) => {
     res.status(404).end();
@@ -166,5 +181,4 @@ app.use((req, res) => {
     console.log(`Server running on port ${PORT}`);
   });
   
-
-employeeQuestions;
+  startPrompt();

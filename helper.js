@@ -24,12 +24,19 @@ class DBHandler {
   }
 
   getAllDepartmentsNames() {
-    const sql = 'SELECT department_name FROM departmentNames';
-    this.connection.query(sql, function (err, results) {
-      if (err) throw err;
-      return (results);
-    });
-  }
+    return new Promise((resolve, reject) => {
+        const sql = 'SELECT department_name FROM departmentNames';
+        this.connection.query(sql, function (err, results) {
+          if (err) {
+            reject(err);
+          } else {
+            // Extract department names from query results
+            const departmentNames = results.map(row => row.department_name);
+            resolve(departmentNames);
+          }
+        });
+      });
+    }
 
   getAllDepartments() {
     const sql = 'SELECT * FROM departmentNames';
@@ -58,21 +65,29 @@ class DBHandler {
   }
 
   addRole(roleName, salary, departmentName) {
-    const getDepartmentIdSql = 'SELECT id FROM departmentNames WHERE department_name = ?';
-    this.connection.query(getDepartmentIdSql, [departmentName], (err, departmentResults) => {
-      if (err) throw err;
-
-   // Extract department ID from query results
-   const departmentId = departmentResults[0].id;
-
-   // Insert role with department ID into roleNames table
-   const insertRoleSql = 'INSERT INTO roleNames (title_name, salary, department_id) VALUES (?, ?, ?)';
-   this.connection.query(insertRoleSql, [roleName, salary, departmentId], (err, roleResults) => {
-     if (err) throw err;
-     console.log('Role added successfully!');
+    return new Promise((resolve, reject) => {
+      const getDepartmentIdSql = 'SELECT id FROM departmentNames WHERE department_name = ?';
+      this.connection.query(getDepartmentIdSql, [departmentName], (err, departmentResults) => {
+        if (err) {
+          reject(err);
+        } else {
+          // Extract department ID from query results
+          const departmentId = departmentResults[0].id;
+  
+          // Insert role with department ID into roleNames table
+          const insertRoleSql = 'INSERT INTO roleNames (title_name, salary, department_id) VALUES (?, ?, ?)';
+          this.connection.query(insertRoleSql, [roleName, salary, departmentId], (err, roleResults) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(roleResults);
+              console.log('Role added successfully!');
+            }
+          });
+        }
+      });
     });
-});
-}
+  }
 
 getAllEmployeeNames() {
     return new Promise((resolve, reject) => {
@@ -85,11 +100,13 @@ getAllEmployeeNames() {
 }
 
   getAllEmployees() {
+    return new Promise((resolve, reject) => {
     const sql = 'SELECT employees.id, employees.first_name, employees.last_name, employees.manager_id, roleNames.title_name, roleNames.salary FROM employees JOIN roleNames ON employees.role_id = roleNames.id;';
     this.connection.query(sql, function (err, results) {
       if (err) throw err;
       console.table(results);
     });
+})
   }
 
   getAllManager() {
